@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TRADIR AI — Leaders Of Trading</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="ambient"></div>
+<div class="grid-overlay"></div>
+<div class="scanline"></div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-right">
+    <div class="logo-mark">T</div>
+    <div class="logo-text">
+      <span class="logo-main">TRADIR AI</span>
+      <span class="logo-sub">نظام التحليل المؤسسي الاحترافي</span>
+    </div>
+  </div>
+  <div class="hdr-center">
+    <div class="status-pill">
+      <span class="dot-pulse"></span>
+      <span>النظام يعمل</span>
+    </div>
+    <!-- API CREDITS INDICATOR -->
+    <div class="api-indicator" id="apiIndicator" title="حالة API Credits">
+      <span class="api-icon">◈</span>
+      <span id="apiCreditsText">API: ---</span>
+      <div class="api-bar-wrap">
+        <div class="api-bar-fill" id="apiBarFill" style="width:100%"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hdr-left">
+    <span class="brand-tag">LEADERS OF TRADING</span>
+  </div>
+</header>
+
+<!-- MAIN GRID -->
+<main class="main-grid">
+
+  <!-- RIGHT PANEL (controls) -->
+  <aside class="panel panel--right">
+
+    <section class="card card--controls">
+      <div class="card__title">
+        <span class="card__icon">⬡</span> ماسح السوق
+      </div>
+      <div class="controls-grid">
+        <div class="field">
+          <label>زوج الفوركس</label>
+          <div class="select-wrap">
+            <select id="pairSelect" onchange="changePair()">
+              {% for p in pairs %}
+              <option value="{{ p.tv }}" data-api="{{ p.label }}">{{ p.label }}</option>
+              {% endfor %}
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>عدد الشموع</label>
+          <div class="select-wrap">
+            <select id="candleCount">
+              <option value="200">200 شمعة</option>
+              <option value="500" selected>500 شمعة</option>
+              <option value="1000">1000 شمعة</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-analyze" id="analyzeBtn" onclick="analyzeMarket()">
+        <span class="btn-icon">◈</span>
+        <span class="btn-text">تحليل السوق</span>
+        <span class="btn-loader" id="btnLoader"></span>
+      </button>
+      <!-- CACHE STATUS -->
+      <div class="cache-notice" id="cacheNotice" style="display:none">
+        <span>⚡ نتيجة محفوظة — متبقي <span id="cacheTimer">--</span>s</span>
+      </div>
+    </section>
+
+    <!-- SIGNAL OUTPUT -->
+    <section class="card card--signal">
+      <div class="card__title"><span class="card__icon">◎</span> نتيجة الإشارة</div>
+      <div class="signal-hero">
+        <div class="signal-direction" id="signalDirection">انتظار</div>
+        <div class="signal-pair" id="signalPair">—</div>
+        <div class="signal-confidence-wrap">
+          <span class="signal-confidence-pct" id="signalConfidence">0%</span>
+          <div class="signal-confidence-bar">
+            <div class="signal-confidence-fill" id="confFill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="signal-meta-grid">
+        <div class="meta-item">
+          <div class="meta-label">سعر الدخول</div>
+          <div class="meta-val" id="signalEntry">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">مدة الصفقة</div>
+          <div class="meta-val" id="signalExpiry">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">المخاطرة</div>
+          <div class="meta-val" id="signalRisk">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">نوع الدخول</div>
+          <div class="meta-val meta-val--sm" id="signalEntryType">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI REASONING -->
+    <section class="card card--reasons">
+      <div class="card__title"><span class="card__icon">◇</span> أسباب القرار</div>
+      <ul class="reasons-list" id="reasonsList">
+        <li class="reason-placeholder">اضغط تحليل السوق لرؤية الأسباب...</li>
+      </ul>
+    </section>
+
+  </aside>
+
+  <!-- CENTER CHART -->
+  <section class="panel panel--chart">
+    <div class="chart-hdr">
+      <span id="chartPairLabel">EUR/USD — 1 دقيقة</span>
+      <span class="chart-badge">TRADINGVIEW LIVE</span>
+    </div>
+    <div id="tradingview_chart" class="tv-chart"></div>
+    <audio id="entrySound" src="{{ url_for('static', filename='sounds/alert.mp3') }}"></audio>
+  </section>
+
+  <!-- LEFT PANEL (engines) -->
+  <aside class="panel panel--left">
+
+    <section class="card">
+      <div class="card__title"><span class="card__icon">△</span> محرك الهيكل</div>
+      <div class="engine-grid">
+        <div class="eng-item"><div class="eng-label">الاتجاه</div><div class="eng-val" id="eTrend">—</div></div>
+        <div class="eng-item"><div class="eng-label">كسر الهيكل</div><div class="eng-val" id="eBos">—</div></div>
+        <div class="eng-item"><div class="eng-label">CHOCH</div><div class="eng-val" id="eChoch">—</div></div>
+        <div class="eng-item"><div class="eng-label">قوة الشمعة</div><div class="eng-val" id="eStrength">—</div></div>
+        <div class="eng-item"><div class="eng-label">HH / HL</div><div class="eng-val" id="eHHHL">—</div></div>
+        <div class="eng-item"><div class="eng-label">LL / LH</div><div class="eng-val" id="eLLLH">—</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__title"><span class="card__icon">◉</span> محرك السيولة</div>
+      <div class="engine-grid">
+        <div class="eng-item eng-item--full"><div class="eng-label">سحب السيولة</div><div class="eng-val eng-val--sm" id="eSweep">—</div></div>
+        <div class="eng-item eng-item--full"><div class="eng-label">صيد وقف الخسارة</div><div class="eng-val eng-val--sm" id="eStopHunt">—</div></div>
+        <div class="eng-item"><div class="eng-label">كسر وهمي</div><div class="eng-val" id="eFakeBO">—</div></div>
+        <div class="eng-item"><div class="eng-label">قمم / قيعان متساوية</div><div class="eng-val" id="eEqHL">—</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__title"><span class="card__icon">◈</span> محرك السمارت موني</div>
+      <div class="engine-grid">
+        <div class="eng-item eng-item--full"><div class="eng-label">شمعة مؤسسية</div><div class="eng-val eng-val--sm" id="eInstit">—</div></div>
+        <div class="eng-item"><div class="eng-label">FVG صاعد</div><div class="eng-val" id="eBullFVG">—</div></div>
+        <div class="eng-item"><div class="eng-label">FVG هابط</div><div class="eng-val" id="eBearFVG">—</div></div>
+        <div class="eng-item"><div class="eng-label">OB صاعد</div><div class="eng-val" id="eBullOB">—</div></div>
+        <div class="eng-item"><div class="eng-label">OB هابط</div><div class="eng-val" id="eBearOB">—</div></div>
+        <div class="eng-item"><div class="eng-label">بلوك كسر</div><div class="eng-val" id="eBreakers">—</div></div>
+        <div class="eng-item"><div class="eng-label">خلل أسعار</div><div class="eng-val" id="eImbalances">—</div></div>
+        <div class="eng-item"><div class="eng-label">الراوند نمبر</div><div class="eng-val" id="eRound">—</div></div>
+      </div>
+    </section>
+
+  </aside>
+</main>
+
+<!-- RATE LIMIT OVERLAY -->
+<div class="rate-overlay" id="rateOverlay" style="display:none">
+  <div class="rate-box">
+    <div class="rate-icon">⏱</div>
+    <div class="rate-title">تجاوز حد الطلبات</div>
+    <div class="rate-msg">انتظر <span id="rateCountdown">60</span> ثانية ثم سيتم التحليل تلقائياً</div>
+    <div class="rate-bar-wrap"><div class="rate-bar-fill" id="rateBarFill"></div></div>
+    <div class="rate-tip">💡 نصيحة: النتائج محفوظة 60 ثانية — لا تحتاج لإعادة تحليل نفس الزوج</div>
+  </div>
+</div>
+
+<!-- SIGNAL TOAST -->
+<div class="toast" id="signalToast">
+  <div class="toast-dir" id="toastDir">CALL</div>
+  <div class="toast-details" id="toastDetails"></div>
+</div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+function loadTradingViewChart(symbol) {
+  document.getElementById("tradingview_chart").innerHTML = "";
+  new TradingView.widget({
+    container_id:"tradingview_chart", width:"100%", height:"100%",
+    symbol:symbol, interval:"1", timezone:"Etc/UTC", theme:"dark", style:"1",
+    locale:"en", toolbar_bg:"#060606", enable_publishing:false,
+    allow_symbol_change:false, save_image:false, withdateranges:true,
+    studies:["RSI@tv-basicstudies","MACD@tv-basicstudies","Volume@tv-basicstudies"],
+    overrides:{
+      "paneProperties.background":"#060606",
+      "paneProperties.vertGridProperties.color":"#111",
+      "paneProperties.horzGridProperties.color":"#111",
+      "scalesProperties.textColor":"#c8a85a"
+    }
+  });
+}
+function changePair() {
+  const sel = document.getElementById("pairSelect");
+  const tv  = sel.value;
+  const lbl = sel.options[sel.selectedIndex].getAttribute("data-api");
+  document.getElementById("chartPairLabel").textContent = lbl + " — 1 دقيقة";
+  loadTradingViewChart(tv);
+}
+window.onload = () => {
+  loadTradingViewChart("FX:EURUSD");
+  updateApiStatus();
+  setInterval(updateApiStatus, 15000); // كل 15 ثانية
+};
+</script>
+</body>
+</html>

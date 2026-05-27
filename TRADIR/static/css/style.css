@@ -1,0 +1,76 @@
+/* TRADIR AI — LICENSE PAGE */
+:root {
+  --gold: #c8a85a;
+  --gold-l: #e8c878;
+  --mono: 'JetBrains Mono', monospace;
+  --ui: 'Rajdhani', sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; background:#000; font-family: var(--ui); }
+
+#bgvid {
+  position: fixed; right:0; bottom:0;
+  min-width:100%; min-height:100%;
+  object-fit:cover; z-index:0;
+}
+.overlay {
+  position: fixed; inset:0; z-index:1;
+  background: rgba(0,0,0,.82);
+  backdrop-filter: blur(4px);
+}
+.container {
+  position: relative; z-index:2;
+  width:100%; height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding: 20px;
+}
+.license-box {
+  width: 100%; max-width: 420px;
+  background: rgba(10,10,10,.9);
+  border: 1px solid rgba(200,168,90,.2);
+  border-radius: 20px; padding: 40px;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(200,168,90,.1);
+}
+.logo-mark-big {
+  width: 56px; height: 56px; border-radius: 14px; margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--gold) 0%, #8a7040 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 700; font-size: 24px;
+  color: #060606; box-shadow: 0 0 30px rgba(200,168,90,.3);
+}
+.license-box h1 {
+  font-family: var(--ui); font-size: 32px; font-weight: 700;
+  color: var(--gold-l); letter-spacing: 6px; margin-bottom: 6px;
+}
+.license-box p { font-family: var(--mono); font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 28px; }
+.input-wrap { margin-bottom: 16px; }
+.license-box input {
+  width: 100%; padding: 14px 16px;
+  background: rgba(0,0,0,.5); border: 1px solid rgba(200,168,90,.15);
+  border-radius: 10px; color: #fff; font-family: var(--mono); font-size: 15px;
+  text-align: center; letter-spacing: 3px; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.license-box input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,168,90,.1); }
+.license-box button {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--gold) 0%, #8a7040 100%);
+  border: none; border-radius: 10px;
+  color: #060606; font-family: var(--ui); font-size: 14px; font-weight: 700;
+  letter-spacing: 3px; cursor: pointer;
+  transition: opacity .2s, transform .1s;
+}
+.license-box button:hover { opacity: .9; }
+.license-box button:active { transform: scale(.98); }
+#message { margin-top: 16px; font-family: var(--mono); font-size: 12px; min-height: 20px; }
+.msg-ok  { color: #00e5a0; }
+.msg-err { color: #ff4466; }
+/* Arabic */
+.license-box h1 { font-family: 'JetBrains Mono', monospace; }
+.license-box p, .license-box button, #message {
+  font-family: 'Tajawal', sans-serif;
+  letter-spacing: 0;
+}
+.license-box p { font-size: 13px; }
+.license-box button { font-size: 16px; font-weight: 700; }

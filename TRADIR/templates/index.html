@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leaders Of Trading — تفعيل الترخيص</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<video autoplay muted loop playsinline id="bgvid">
+  <source src="{{ url_for('static', filename='videos/trading-bg.mp4') }}" type="video/mp4"/>
+</video>
+<div class="overlay"></div>
+<div class="container">
+  <div class="license-box">
+    <div class="logo-mark-big">T</div>
+    <h1>TRADIR AI</h1>
+    <p>منصة Leaders Of Trading — تفعيل الترخيص الاحترافي</p>
+    <div class="input-wrap">
+      <input type="text" id="licenseKey" placeholder="LOT-XXXX-XXXX" autocomplete="off" spellcheck="false" dir="ltr"/>
+    </div>
+    <button onclick="activateLicense()">
+      <span>تفعيل الترخيص</span>
+    </button>
+    <div id="message"></div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
